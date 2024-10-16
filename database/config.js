@@ -1,7 +1,7 @@
-import { config } from 'dotenv';
-config();
+const dotenv = require('dotenv');
+dotenv.config();
 
-export default {
+module.exports = {
   development: {
     dialect: 'postgres',
     url:
