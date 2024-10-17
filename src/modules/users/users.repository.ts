@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { IUserRepository } from './interfaces/user-repository.interface';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from 'src/models/user.model';
+import { WhereOptions } from 'sequelize';
 
 @Injectable()
 export class UsersRepository implements IUserRepository {
@@ -15,8 +16,9 @@ export class UsersRepository implements IUserRepository {
     return this.userModel.findAll();
   }
 
-  async findByEmail(email: string): Promise<User> {
-    return this.userModel.findOne({ where: { email } });
+  async findOneByQuery(whereOptions: WhereOptions<User>): Promise<User> {
+    console.log('Find by EMAIL: ', whereOptions);
+    return this.userModel.findOne({ where: whereOptions });
   }
 
   async findById(id: number): Promise<User> {

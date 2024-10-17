@@ -1,18 +1,16 @@
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
-  IsNumber,
   IsString,
   IsStrongPassword,
 } from 'class-validator';
+import { USER_ROLES } from 'src/utils/enums/roles';
+
 export class CreateUserDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-
-  @IsNotEmpty()
-  @IsStrongPassword()
-  password: string;
 
   @IsNotEmpty()
   @IsString()
@@ -23,6 +21,10 @@ export class CreateUserDto {
   lastName: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  roleId: number;
+  @IsStrongPassword()
+  password: string;
+
+  @IsNotEmpty()
+  @IsEnum(USER_ROLES, { message: 'Role must be ADMIN or USER' })
+  role: USER_ROLES;
 }
