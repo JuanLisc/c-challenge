@@ -14,21 +14,17 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
-    console.log('VALIDATE USER SERVICE: ', email, pass);
     const user = await this.usersService.getByEmail(email);
-
     if (!user) throw new BadRequestException('Invalid Credentials');
 
     const isPassCorrect: boolean = bcrypt.compareSync(pass, user.password);
-
     if (!isPassCorrect) throw new BadRequestException('Invalid Credentials');
 
     return user;
   }
 
   async signIn(user: User): Promise<any> {
-    console.log('SIGN IN SERVICE: ', user);
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
 
     return {
       access_token: await this.jwtService.signAsync(payload),

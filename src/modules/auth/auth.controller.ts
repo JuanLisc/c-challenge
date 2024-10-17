@@ -12,13 +12,11 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
-    console.log('LOGIN: ', req.user);
     return this.authService.signIn(req.user);
   }
 
   @Post('register')
   async register(@Body() signUp: SignUpDto) {
-    console.log('SIGN UP: ', signUp);
     return await this.authService.signUp(signUp);
   }
 }
