@@ -1,12 +1,5 @@
-import {
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  Table,
-  Unique,
-} from 'sequelize-typescript';
-import { Role } from './role.model';
+import { Column, DataType, Model, Table, Unique } from 'sequelize-typescript';
+import { USER_ROLES } from 'src/utils/enums/roles';
 
 @Table({
   timestamps: true,
@@ -28,7 +21,10 @@ export class User extends Model {
   @Column({ type: DataType.STRING, allowNull: false })
   public lastName: string;
 
-  @ForeignKey(() => Role)
-  @Column({ type: DataType.INTEGER, allowNull: false })
-  public roleId: number;
+  @Column({
+    type: DataType.ENUM(...Object.values(USER_ROLES)),
+    allowNull: false,
+    defaultValue: USER_ROLES.USER,
+  })
+  public role: USER_ROLES;
 }
