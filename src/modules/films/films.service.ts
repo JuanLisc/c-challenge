@@ -11,14 +11,17 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Film } from 'src/models/film.model';
 import { camelCase, mapKeys } from 'lodash';
-import { WhereOptions } from 'sequelize';
+import { Sequelize, WhereOptions } from 'sequelize';
 import { Op } from 'sequelize';
+import { InjectConnection } from '@nestjs/sequelize';
+import { ResponseMessage } from 'src/utils/types/response-message';
 
 @Injectable()
 export class FilmsService {
   private starWarsFilmsUrl: string;
 
   constructor(
+    @InjectConnection() private readonly sequelize: Sequelize,
     private readonly filmsRepository: FilmsRepository,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
@@ -28,7 +31,7 @@ export class FilmsService {
     );
   }
 
-  async syncFilms(): Promise<void> {
+  async syncFilms(): Promise<ResponseMessage> {
     try {
       const { data } = await this.httpService.axiosRef.get(
         this.starWarsFilmsUrl,
@@ -37,7 +40,16 @@ export class FilmsService {
         mapKeys(film, (value, key) => camelCase(key)),
       );
 
-      await this.filmsRepository.bulkCreate(transformedFilms);
+      const transaction = await this.sequelize.transaction();
+      await this.filmsRepository.delete(
+        {},
+        { truncate: true, force: true, transaction },
+      );
+      await this.filmsRepository.bulkCreate(transformedFilms, transaction);
+
+      await transaction.commit();
+
+      return { message: 'Films successfully synchronized' };
     } catch (error) {
       throw new InternalServerErrorException(
         `Error Synchronizing films: ${error}`,
@@ -100,11 +112,11 @@ export class FilmsService {
     }
   }
 
-  async remove(id: number): Promise<{ message: string }> {
+  async remove(id: number): Promise<ResponseMessage> {
     await this.getById(id);
 
     try {
-      await this.filmsRepository.delete(id);
+      await this.filmsRepository.delete({ id });
 
       return { message: `Film with ID ${id} deleted successfully` };
     } catch (error) {
