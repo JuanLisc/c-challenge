@@ -3,7 +3,6 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './users.repository';
 import { User } from 'src/models/user.model';
 
@@ -40,27 +39,31 @@ export class UsersService {
   }
 
   async getByEmail(email: string): Promise<User> {
-    return await this.usersRepository.findOneByQuery({ email });
+    try {
+      return this.usersRepository.findOneByQuery({ email });
+    } catch (error) {
+      throw new InternalServerErrorException(`Error getting user: ${error}`);
+    }
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async updateOne(id: number, updateData: Partial<User>): Promise<User> {
     try {
-      const userToUpdate = await this.getById(id);
+      const [length, affectedRows] = await this.usersRepository.update(
+        { id },
+        updateData,
+      );
 
-      // En este caso hago uso directamente del user obtenido a partir del getById, sin necesidad de usar el repository
-      return userToUpdate.update(updateUserDto);
+      return affectedRows[0];
     } catch (error) {
       throw new InternalServerErrorException(`Error updating user: ${error}`);
     }
   }
 
   async remove(id: number) {
+    await this.getById(id);
     try {
-      await this.getById(id);
-
       // Uso el repository en este caso, pero podria hacerlo de la misma manera que en el update
-      const userDeleted = await this.usersRepository.delete(id);
-      console.log(userDeleted);
+      await this.usersRepository.delete(id);
       return { message: `User with ID ${id} deleted successfully` };
     } catch (error) {
       throw new InternalServerErrorException(`Error deleting user: ${error}`);

@@ -6,6 +6,9 @@ export interface IUserRepository {
   findAll(): Promise<User[]>;
   findById(id: number): Promise<User>;
   findOneByQuery(whereOptions: WhereOptions<User>): Promise<User>;
-  update(id: number, userToUpdate: Partial<User>): Promise<[number, User[]]>;
+  update(
+    whereOptions: WhereOptions<User>,
+    userToUpdate: Partial<User>,
+  ): Promise<[number, User[]]>;
   delete(id: number): Promise<number>;
 }
