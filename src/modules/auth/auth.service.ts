@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -11,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { AccessToken } from 'src/utils/types/access-token';
 import { SignUpDto } from './dto/signup.dto';
 import { ChangePassDto } from './dto/change-password.dto';
+import { ResponseMessage } from 'src/utils/types/response-message';
 
 @Injectable()
 export class AuthService {
@@ -23,10 +25,10 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.usersService.getByEmail(email);
-    if (!user) throw new BadRequestException('Invalid Credentials');
+    if (!user) throw new UnauthorizedException('Invalid Credentials');
 
     const isPassCorrect: boolean = bcrypt.compareSync(pass, user.password);
-    if (!isPassCorrect) throw new BadRequestException('Invalid Credentials');
+    if (!isPassCorrect) throw new UnauthorizedException('Invalid Credentials');
 
     return user;
   }
@@ -70,7 +72,7 @@ export class AuthService {
   async changePassword(
     userId: number,
     changePassDto: ChangePassDto,
-  ): Promise<{ message: string }> {
+  ): Promise<ResponseMessage> {
     try {
       const { currentPassword, newPassword } = changePassDto;
       const loggedUser = await this.usersService.getById(userId);
