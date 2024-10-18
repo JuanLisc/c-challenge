@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { JwtStrategy } from './modules/auth/strategies/jwt.strategy';
+import { FilmsModule } from './modules/films/films.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { JwtStrategy } from './modules/auth/strategies/jwt.strategy';
     }),
     UsersModule,
     AuthModule,
+    FilmsModule,
   ],
   controllers: [AppController],
   providers: [
