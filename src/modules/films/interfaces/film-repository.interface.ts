@@ -1,14 +1,23 @@
-import { WhereOptions } from 'sequelize';
+import { DestroyOptions, Transaction, WhereOptions } from 'sequelize';
 import { Film } from 'src/models/film.model';
 
 export interface IFilmRepository {
   create(filmToCreate: Partial<Film>): Promise<Film>;
-  bulkCreate(films: Partial<Film>[]): Promise<Film[]>;
+  bulkCreate(
+    films: Partial<Film>[],
+    transaction?: Transaction,
+  ): Promise<Film[]>;
   findAll(): Promise<Film[]>;
   findById(id: number): Promise<Film>;
   findOneByQuery(whereOptions: WhereOptions<Film>): Promise<Film>;
-  update(id: number, filmToUpdate: Partial<Film>): Promise<[number, Film[]]>;
-  delete(id: number): Promise<number>;
+  update(
+    whereOptions: WhereOptions<Film>,
+    filmToUpdate: Partial<Film>,
+  ): Promise<[number, Film[]]>;
+  delete(
+    whereOptions: WhereOptions<Film>,
+    destroyOptions?: DestroyOptions<Film>,
+  ): Promise<number>;
 }
 
 export interface IBaseRepository<T> {

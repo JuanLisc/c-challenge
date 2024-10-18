@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { WhereOptions } from 'sequelize';
+import { DestroyOptions, Transaction, WhereOptions } from 'sequelize';
 import { IFilmRepository } from './interfaces/film-repository.interface';
 import { Film } from 'src/models/film.model';
 
@@ -12,8 +12,14 @@ export class FilmsRepository implements IFilmRepository {
     return this.filmModel.create({ ...film });
   }
 
-  async bulkCreate(films: Partial<Film>[]): Promise<Film[]> {
-    return this.filmModel.bulkCreate(films, { ignoreDuplicates: true });
+  async bulkCreate(
+    films: Partial<Film>[],
+    transaction?: Transaction,
+  ): Promise<Film[]> {
+    return this.filmModel.bulkCreate(films, {
+      ignoreDuplicates: true,
+      transaction,
+    });
   }
 
   async findAll(): Promise<Film[]> {
@@ -28,11 +34,20 @@ export class FilmsRepository implements IFilmRepository {
     return this.filmModel.findByPk(id);
   }
 
-  async update(id: number, film: Partial<Film>): Promise<[number, Film[]]> {
-    return this.filmModel.update(film, { where: { id }, returning: true });
+  async update(
+    whereOptions: WhereOptions<Film>,
+    film: Partial<Film>,
+  ): Promise<[number, Film[]]> {
+    return this.filmModel.update(film, {
+      where: whereOptions,
+      returning: true,
+    });
   }
 
-  async delete(id: number): Promise<number> {
-    return this.filmModel.destroy({ where: { id } });
+  async delete(
+    whereOptions: WhereOptions<Film>,
+    destroyOptions?: DestroyOptions<Film>,
+  ): Promise<number> {
+    return this.filmModel.destroy({ where: whereOptions, ...destroyOptions });
   }
 }
