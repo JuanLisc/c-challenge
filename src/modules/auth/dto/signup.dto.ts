@@ -31,7 +31,6 @@ export class SignUpDto {
   password: string;
 
   @IsNotEmpty()
-  @IsStrongPassword()
   @Match('password')
   confirmPassword: string;
 

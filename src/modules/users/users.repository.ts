@@ -17,7 +17,6 @@ export class UsersRepository implements IUserRepository {
   }
 
   async findOneByQuery(whereOptions: WhereOptions<User>): Promise<User> {
-    console.log('Find by EMAIL: ', whereOptions);
     return this.userModel.findOne({ where: whereOptions });
   }
 
@@ -25,8 +24,14 @@ export class UsersRepository implements IUserRepository {
     return this.userModel.findByPk(id);
   }
 
-  async update(id: number, user: Partial<User>): Promise<[number, User[]]> {
-    return this.userModel.update(user, { where: { id }, returning: true });
+  async update(
+    whereOptions: WhereOptions<User>,
+    user: Partial<User>,
+  ): Promise<[number, User[]]> {
+    return this.userModel.update(user, {
+      where: whereOptions,
+      returning: true,
+    });
   }
 
   async delete(id: number): Promise<number> {
