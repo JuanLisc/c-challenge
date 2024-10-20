@@ -7,12 +7,12 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/models/user.model';
+import { User } from '../../models/user.model';
 import * as bcrypt from 'bcrypt';
-import { AccessToken } from 'src/utils/types/access-token';
+import { AccessToken } from '../../utils/types/access-token';
 import { SignUpDto } from './dto/signup.dto';
 import { ChangePassDto } from './dto/change-password.dto';
-import { ResponseMessage } from 'src/utils/types/response-message';
+import { ResponseMessage } from '../../utils/types/response-message';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +24,7 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
+    this.logger.debug('StartValidatingUser', { data: { email, pass } });
     const user = await this.usersService.getByEmail(email);
     if (!user) throw new UnauthorizedException('Invalid Credentials');
 
@@ -34,6 +35,7 @@ export class AuthService {
   }
 
   async signIn(user: User): Promise<any> {
+    this.logger.debug('StartSigningInUser', { data: { user } });
     const payload = { sub: user.id, email: user.email, role: user.role };
 
     return {
@@ -42,9 +44,15 @@ export class AuthService {
   }
 
   async signUp(user: SignUpDto): Promise<AccessToken> {
+    this.logger.debug('StartSigningUpUser', { data: { user } });
     try {
       const existingUser = await this.usersService.getByEmail(user.email);
-      if (existingUser) throw new BadRequestException('Email already in use');
+      if (existingUser) {
+        this.logger.error('EmailAlreadyInUse', {
+          data: { emailInUse: user.email },
+        });
+        throw new BadRequestException('Email already in use');
+      }
 
       const hashedPassword = await bcrypt.hash(user.password, 10);
       const { confirmEmail, confirmPassword, ...newUserData } = user;
@@ -60,7 +68,7 @@ export class AuthService {
 
       this.logger.error(
         `Error during sign-up process for email: ${user.email}`,
-        error,
+        { data: JSON.stringify(error) },
       );
 
       throw new InternalServerErrorException(
@@ -73,6 +81,9 @@ export class AuthService {
     userId: number,
     changePassDto: ChangePassDto,
   ): Promise<ResponseMessage> {
+    this.logger.debug('StartChangingPassword', {
+      data: { userId, changePassDto },
+    });
     try {
       const { currentPassword, newPassword } = changePassDto;
       const loggedUser = await this.usersService.getById(userId);
@@ -91,7 +102,9 @@ export class AuthService {
     } catch (error) {
       if (error instanceof BadRequestException) throw error;
 
-      this.logger.error(`Error during change-password process`, error);
+      this.logger.error(`Error during change-password process`, {
+        data: JSON.stringify(error),
+      });
 
       throw new InternalServerErrorException(
         'An error occurred while changing password',
