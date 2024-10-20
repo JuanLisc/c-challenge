@@ -1,5 +1,10 @@
-import { DestroyOptions, Transaction, WhereOptions } from 'sequelize';
-import { Film } from 'src/models/film.model';
+import {
+  DestroyOptions,
+  FindOptions,
+  Transaction,
+  WhereOptions,
+} from 'sequelize';
+import { Film } from '../../../models/film.model';
 
 export interface IFilmRepository {
   create(filmToCreate: Partial<Film>): Promise<Film>;
@@ -7,7 +12,7 @@ export interface IFilmRepository {
     films: Partial<Film>[],
     transaction?: Transaction,
   ): Promise<Film[]>;
-  findAll(): Promise<Film[]>;
+  findAll(options?: FindOptions<Film>): Promise<Film[]>;
   findById(id: number): Promise<Film>;
   findOneByQuery(whereOptions: WhereOptions<Film>): Promise<Film>;
   update(

@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { DestroyOptions, Transaction, WhereOptions } from 'sequelize';
+import {
+  DestroyOptions,
+  FindOptions,
+  Transaction,
+  WhereOptions,
+} from 'sequelize';
 import { IFilmRepository } from './interfaces/film-repository.interface';
-import { Film } from 'src/models/film.model';
+import { Film } from '../../models/film.model';
 
 @Injectable()
 export class FilmsRepository implements IFilmRepository {
@@ -22,8 +27,8 @@ export class FilmsRepository implements IFilmRepository {
     });
   }
 
-  async findAll(): Promise<Film[]> {
-    return this.filmModel.findAll();
+  async findAll(options?: FindOptions<Film>): Promise<Film[]> {
+    return this.filmModel.findAll(options);
   }
 
   async findOneByQuery(whereOptions: WhereOptions<Film>): Promise<Film> {

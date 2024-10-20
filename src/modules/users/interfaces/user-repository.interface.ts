@@ -1,5 +1,5 @@
 import { WhereOptions } from 'sequelize';
-import { User } from 'src/models/user.model';
+import { User } from '../../../models/user.model';
 
 export interface IUserRepository {
   create(userToCreate: Partial<User>): Promise<User>;

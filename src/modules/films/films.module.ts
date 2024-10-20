@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { FilmsService } from './films.service';
 import { FilmsController } from './films.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { Film } from 'src/models/film.model';
+import { Film } from '../../models/film.model';
 import { FilmsRepository } from './films.repository';
 import { HttpModule } from '@nestjs/axios';
 

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, DataType, Model, Table, Unique } from 'sequelize-typescript';
-import { USER_ROLES } from 'src/utils/enums/roles';
+import { USER_ROLES } from '../utils/enums/roles';
 
 @Table({
   timestamps: true,

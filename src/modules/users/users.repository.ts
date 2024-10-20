@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IUserRepository } from './interfaces/user-repository.interface';
 import { InjectModel } from '@nestjs/sequelize';
-import { User } from 'src/models/user.model';
+import { User } from '../../models/user.model';
 import { WhereOptions } from 'sequelize';
 
 @Injectable()

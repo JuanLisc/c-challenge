@@ -9,12 +9,12 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { Public } from 'src/utils/decorators/public.decorator';
+import { Public } from '../../utils/decorators/public.decorator';
 import { SignUpDto } from './dto/signup.dto';
 import { ChangePassDto } from './dto/change-password.dto';
-import { AccessToken } from 'src/utils/types/access-token';
-import { AuthUser, IAuthUser } from 'src/utils/decorators/user.decorator';
-import { User } from 'src/models/user.model';
+import { AccessToken } from '../../utils/types/access-token';
+import { AuthUser, IAuthUser } from '../../utils/decorators/user.decorator';
+import { User } from '../../models/user.model';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -22,7 +22,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ResponseMessage } from 'src/utils/types/response-message';
+import { ResponseMessage } from '../../utils/types/response-message';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -80,7 +80,7 @@ export class AuthController {
   @ApiResponse({
     status: 400,
     description:
-      'Validation failed, check input parameters or Email already in use',
+      'Email already in use or Validation failed, check input parameters',
     schema: {
       oneOf: [
         {
@@ -124,7 +124,7 @@ export class AuthController {
   @ApiResponse({
     status: 400,
     description:
-      'Validation failed, check input parameters or Invalid current password',
+      'Invalid current password or Validation failed, check input parameters',
     schema: {
       oneOf: [
         {

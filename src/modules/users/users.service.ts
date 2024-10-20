@@ -4,7 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
-import { User } from 'src/models/user.model';
+import { User } from '../../models/user.model';
+import { ResponseMessage } from '../../utils/types/response-message';
 
 @Injectable()
 export class UsersService {
@@ -53,19 +54,26 @@ export class UsersService {
         updateData,
       );
 
+      if (length === 0)
+        throw new NotFoundException(`User with ID ${id} not found`);
+
       return affectedRows[0];
     } catch (error) {
+      if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException(`Error updating user: ${error}`);
     }
   }
 
-  async remove(id: number) {
-    await this.getById(id);
+  async remove(id: number): Promise<ResponseMessage> {
     try {
-      // Uso el repository en este caso, pero podria hacerlo de la misma manera que en el update
-      await this.usersRepository.delete(id);
+      const result = await this.usersRepository.delete(id);
+
+      if (result === 0)
+        throw new NotFoundException(`User with ID ${id} not found`);
+
       return { message: `User with ID ${id} deleted successfully` };
     } catch (error) {
+      if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException(`Error deleting user: ${error}`);
     }
   }

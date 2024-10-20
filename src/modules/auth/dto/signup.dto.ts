@@ -7,8 +7,8 @@ import {
   IsStrongPassword,
   Matches,
 } from 'class-validator';
-import { Match } from 'src/utils/decorators/match.decorator';
-import { USER_ROLES } from 'src/utils/enums/roles';
+import { Match } from '../../../utils/decorators/match.decorator';
+import { USER_ROLES } from '../../../utils/enums/roles';
 
 export class SignUpDto {
   @ApiProperty({ example: 'user@example.com' })

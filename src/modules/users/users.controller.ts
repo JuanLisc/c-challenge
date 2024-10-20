@@ -1,8 +1,8 @@
 import { Controller, Get, Param, Delete, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from 'src/utils/decorators/roles.decorator';
-import { USER_ROLES } from 'src/utils/enums/roles';
+import { Roles } from '../../utils/decorators/roles.decorator';
+import { USER_ROLES } from '../../utils/enums/roles';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -10,7 +10,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { User } from 'src/models/user.model';
+import { User } from '../../models/user.model';
 
 @UseGuards(RolesGuard)
 @Roles(USER_ROLES.ADMIN)
@@ -23,7 +23,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get a list with all the users' })
+  @ApiOperation({ summary: 'Get a list of all users' })
   @ApiResponse({
     status: 200,
     description: 'List of users',
