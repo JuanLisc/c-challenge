@@ -1,12 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { ApiExcludeController } from '@nestjs/swagger';
+import { ResponseMessage } from './utils/types/response-message';
 
+@ApiExcludeController()
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  heatlCheck(): ResponseMessage {
+    return { message: 'Server is running' };
   }
 }
