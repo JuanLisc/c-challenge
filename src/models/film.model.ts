@@ -9,7 +9,6 @@ import { Column, DataType, Model, Table, Unique } from 'sequelize-typescript';
 })
 export class Film extends Model {
   @ApiProperty({ example: 'A New Hope' })
-  @Unique(true)
   @Column({ type: DataType.STRING, allowNull: false })
   public title: string;
 
