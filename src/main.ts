@@ -8,9 +8,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Star Wars Film Manager API')
-    .setDescription(
-      'Documentación de la API para gestionar las películas de Star Wars',
-    )
+    .setDescription('Star Wars Film Manager API documentation')
     .setVersion('1.0')
     .addTag('auth')
     .addTag('users')
