@@ -11,11 +11,11 @@ import {
 import { FilmsService } from './films.service';
 import { CreateFilmDto } from './dto/create-film.dto';
 import { UpdateFilmDto } from './dto/update-film.dto';
-import { Film } from 'src/models/film.model';
-import { Public } from 'src/utils/decorators/public.decorator';
+import { Film } from '../../models/film.model';
+import { Public } from '../../utils/decorators/public.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from 'src/utils/decorators/roles.decorator';
-import { USER_ROLES } from 'src/utils/enums/roles';
+import { Roles } from '../../utils/decorators/roles.decorator';
+import { USER_ROLES } from '../../utils/enums/roles';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -24,7 +24,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ResponseMessage } from 'src/utils/types/response-message';
+import { ResponseMessage } from '../../utils/types/response-message';
 
 @UseGuards(RolesGuard)
 @ApiTags('films')
@@ -43,26 +43,38 @@ export class FilmsController {
     description: 'Film created successfully',
     type: Film,
   })
-  @ApiResponse({ status: 400, description: 'Film already exists' })
   @ApiResponse({
     status: 400,
-    description: 'Validation failed. Check input parameters.',
+    description:
+      'Film already exists or Validation failed, check input parameters',
     schema: {
-      example: {
-        statusCode: 400,
-        message: [
-          'episodeId must be a number conforming to the specified constraints',
-        ],
-        error: 'Bad Request',
-      },
+      oneOf: [
+        {
+          example: {
+            statusCode: 400,
+            message: [
+              'episodeId must be a number conforming to the specified constraints',
+            ],
+            error: 'Bad Request',
+          },
+        },
+        {
+          example: {
+            statusCode: 400,
+            message: 'Film already exists',
+            error: 'Bad Request',
+          },
+        },
+      ],
     },
   })
+  @ApiResponse({ status: 403, description: 'Forbidden, only ADMIN' })
   create(@Body() createFilmDto: CreateFilmDto): Promise<Film> {
     return this.filmsService.create(createFilmDto);
   }
 
   @Roles(USER_ROLES.ADMIN)
-  @Get('sync')
+  @Post('sync')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Synchronize films from an external API' })
   @ApiResponse({
@@ -74,6 +86,7 @@ export class FilmsController {
       },
     },
   })
+  @ApiResponse({ status: 403, description: 'Forbidden, only ADMIN' })
   syncFilms(): Promise<ResponseMessage> {
     return this.filmsService.syncFilms();
   }
@@ -86,14 +99,15 @@ export class FilmsController {
     return this.filmsService.getAll();
   }
 
-  // El challenge dice que solo los Usuarios regulares deberian tener acceso a este endpoint,
-  // pienso que los administradores tambien deberian
+  // CHallenge says that only regular users should have access to this endpoint,
+  // I think admins should have it too
   @Roles(USER_ROLES.USER)
   @Get(':id')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get a film by ID' })
   @ApiParam({ name: 'id', description: 'ID of the film' })
   @ApiResponse({ status: 200, description: 'Film details', type: Film })
+  @ApiResponse({ status: 403, description: 'Forbidden, only USER' })
   @ApiResponse({ status: 404, description: 'Film not found' })
   findOne(@Param('id') id: string): Promise<Film> {
     return this.filmsService.getById(+id);
@@ -110,7 +124,6 @@ export class FilmsController {
     description: 'Film updated successfully',
     type: Film,
   })
-  @ApiResponse({ status: 404, description: 'Film not found' })
   @ApiResponse({
     status: 400,
     description: 'Validation failed. Check input parameters.',
@@ -124,11 +137,13 @@ export class FilmsController {
       },
     },
   })
+  @ApiResponse({ status: 403, description: 'Forbidden, only ADMIN' })
+  @ApiResponse({ status: 404, description: 'Film not found' })
   update(
     @Param('id') id: string,
     @Body() updateFilmDto: UpdateFilmDto,
   ): Promise<Film> {
-    return this.filmsService.update(+id, updateFilmDto);
+    return this.filmsService.updateOne(+id, updateFilmDto);
   }
 
   @Roles(USER_ROLES.ADMIN)
@@ -141,6 +156,7 @@ export class FilmsController {
     description: 'Film deleted successfully',
     schema: { example: { message: 'Film with ID X deleted successfully' } },
   })
+  @ApiResponse({ status: 403, description: 'Forbidden, only ADMIN' })
   @ApiResponse({ status: 404, description: 'Film not found' })
   remove(@Param('id') id: string): Promise<ResponseMessage> {
     return this.filmsService.remove(+id);
