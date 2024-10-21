@@ -12,8 +12,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Film } from '../../models/film.model';
 import { camelCase, mapKeys } from 'lodash';
-import { Sequelize, WhereOptions } from 'sequelize';
-import { InjectConnection } from '@nestjs/sequelize';
+import { WhereOptions } from 'sequelize';
 import { ResponseMessage } from '../../utils/types/response-message';
 
 @Injectable()
@@ -22,7 +21,6 @@ export class FilmsService {
   private starWarsFilmsUrl: string;
 
   constructor(
-    @InjectConnection() private readonly sequelize: Sequelize,
     private readonly filmsRepository: FilmsRepository,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
