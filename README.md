@@ -3,11 +3,11 @@ The Star Wars Movie Management API is a backend application that allows users to
 
 # Features
 
-- In order to query the API you must have a user and log in. You can create a user using the ```register``` endpoint and log in using the ```login``` one. When you create a user you must choose one of two roles (```ADMIN``` or ```USER```). With an admin role you will be able to sync, create, update and delete films, while with a user role you will only be able to get and see for films and its data.
+- In order to query the API you must have a user and log in. You can create a user using the ```register``` endpoint and log in using the ```login``` one. When you create a user you must choose one of two roles (```ADMIN``` or ```USER```). With an admin role you will be able to sync, create, update and delete films, while with a user role you will only be able to get and see films and its data.
 
 # Environment Variables
 
-The application uses environment variables for various purposes, such as configuring the connection to your PostgreSQL database. Therefore, before running the application, make sure to set up the environment variables in the .env file (you can follow the .env.template file as a guide). If any of the environment variables are not configured correctly, the application will not start and will throw an error specifying which environment variables are missing or misconfigured.
+The application uses environment variables for various purposes, such as configuring the connection to your PostgreSQL database. Therefore, before running the application, make sure to set up the environment variables in the .env file (you can follow the .env.template file as a guide). If any of the environment variables are not configured correctly, the application will not start or it won't work properly.
 
 # Getting Started
 
@@ -15,7 +15,7 @@ The application uses environment variables for various purposes, such as configu
 
 Before you begin, ensure you have met the following requirements:
 
-- Node.js (v14 or higher)
+- Node.js
 - PostgreSQL
 
 - Docker: Ensure that you have Docker installed on your system. If you don't have Docker installed, you can download and install it from [Docker's official website](https://www.docker.com/).
@@ -104,7 +104,10 @@ $ npm run start:dev
 ```json
 {
   "email": "user@example.com",
-  "password": "yourpassword"
+  "password": "Yourpassword1.",
+  "firstName": "John",
+  "lastName": "Doe",
+  "role": "ADMIN"
 }
 ```
 - **Response**:
@@ -120,8 +123,9 @@ $ npm run start:dev
 - **Request**:
 ```json
 {
-  "currentPassword": "oldpassword",
-  "newPassword": "newpassword"
+  "currentPassword": "Yourpassword1.",
+  "newPassword": "Abcd1234.",
+  "confirmPassword": "Abcd1234."
 }
 ```
 - **Response**:
