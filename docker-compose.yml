@@ -1,0 +1,38 @@
+services:
+  conexa-challenge-postgres:
+    container_name: conexa-challenge-postgres
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    env_file: .env
+  
+  backend-app:
+    build:
+      context: .
+      target: development
+    container_name: conexa-challenge-backend
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - PORT=${PORT}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+    ports:
+      - '3001:3001'
+    env_file: .env
+    command: npm run start:migrate:dev
+    restart: always
+    depends_on:
+      - conexa-challenge-postgres
+    volumes:
+      - ./src:/app/src
